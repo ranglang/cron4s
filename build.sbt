@@ -222,7 +222,7 @@ lazy val docs = project
   .dependsOn(cron4sJVM)
 
 lazy val core = (crossProject(JSPlatform, JVMPlatform) in file("modules/core"))
-  .enablePlugins(AutomateHeaderPlugin, ScalafmtPlugin)
+  .enablePlugins(AutomateHeaderPlugin, ScalafmtPlugin, ScalaMeterPlugin)
   .settings(
     name := "core",
     moduleName := "cron4s-core"

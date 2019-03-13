@@ -39,6 +39,8 @@ sealed trait Node[F <: CronField] {
     */
   val unit: CronUnit[F]
 
+  def matches: Predicate[Int]
+
   def range: IndexedSeq[Int]
 
 }
@@ -51,6 +53,10 @@ final class EachNode[F <: CronField] private (val unit: CronUnit[F]) extends Nod
   }
 
   override lazy val hashCode: Int = toString.hashCode()
+
+  override def matches = Predicate { x =>
+    x >= range.min && x <= range.max
+  }
 
   lazy val range: IndexedSeq[Int] = unit.range
 
@@ -76,9 +82,7 @@ object EachNode {
           implicit EE: FieldExpr[EE, F]
       ): Boolean = true
 
-      def matches(node: EachNode[F]): Predicate[Int] = Predicate { x =>
-        x >= min(node) && x <= max(node)
-      }
+      def matches(node: EachNode[F]): Predicate[Int] = node.matches
 
       def range(node: EachNode[F]): IndexedSeq[Int] = node.range
     }
@@ -93,6 +97,10 @@ final class AnyNode[F <: CronField] private (val unit: CronUnit[F]) extends Node
   }
 
   override lazy val hashCode: Int = toString.hashCode()
+
+  override def matches = Predicate { x =>
+    x >= range.min && x <= range.max
+  }
 
   lazy val range: IndexedSeq[Int] = unit.range
 
@@ -118,9 +126,7 @@ object AnyNode {
           implicit EE: FieldExpr[EE, F]
       ): Boolean = true
 
-      def matches(node: AnyNode[F]): Predicate[Int] = Predicate { x =>
-        x >= min(node) && x <= max(node)
-      }
+      def matches(node: AnyNode[F]): Predicate[Int] = node.matches
 
       def range(node: AnyNode[F]): IndexedSeq[Int] = node.range
     }
@@ -139,6 +145,8 @@ final class ConstNode[F <: CronField] private (
   }
 
   override lazy val hashCode: Int = value.hashCode()
+
+  def matches = equalTo(value)
 
   lazy val range: IndexedSeq[Int] = Vector(value)
 
@@ -165,7 +173,7 @@ object ConstNode {
     new FieldExpr[ConstNode, F] {
       def unit(node: ConstNode[F]): CronUnit[F] = node.unit
 
-      def matches(node: ConstNode[F]): Predicate[Int] = equalTo(node.value)
+      def matches(node: ConstNode[F]): Predicate[Int] = node.matches
 
       def implies[EE[_ <: CronField]](
           node: ConstNode[F]
@@ -193,6 +201,12 @@ final class BetweenNode[F <: CronField] private (
 
   override lazy val hashCode: Int =
     begin.hashCode * 31 + end.hashCode * 31
+
+  def matches = Predicate { x =>
+    if (begin.value < end.value)
+      x >= begin.value && x <= end.value
+    else false
+  }
 
   lazy val range: IndexedSeq[Int] = {
     val min = Math.min(begin.value, end.value)
@@ -225,11 +239,7 @@ object BetweenNode {
 
       def unit(node: BetweenNode[F]): CronUnit[F] = node.unit
 
-      def matches(node: BetweenNode[F]): Predicate[Int] = Predicate { x =>
-        if (node.begin.value < node.end.value)
-          x >= node.begin.value && x <= node.end.value
-        else false
-      }
+      def matches(node: BetweenNode[F]): Predicate[Int] = node.matches
 
       def implies[EE[_ <: CronField]](
           node: BetweenNode[F]
@@ -257,6 +267,8 @@ final class SeveralNode[F <: CronField] private (
 
   override lazy val hashCode: Int =
     values.map(_.hashCode() * 31).reduce
+
+  override def matches = anyOf(values.map(_.matches))
 
   lazy val range: IndexedSeq[Int] =
     values.toList.view.flatMap(_.range).distinct.sorted.toIndexedSeq
@@ -302,7 +314,7 @@ object SeveralNode {
       def unit(node: SeveralNode[F]): CronUnit[F] = node.unit
 
       def matches(node: SeveralNode[F]): Predicate[Int] =
-        anyOf(node.values.map(_.matches))
+        node.matches
 
       def implies[EE[_ <: CronField]](
           node: SeveralNode[F]
@@ -329,6 +341,8 @@ final class EveryNode[F <: CronField] private (
 
   override lazy val hashCode: Int =
     base.hashCode() * 31 + freq
+
+  override def matches = anyOf(range.map(equalTo(_)).toList)
 
   lazy val range: IndexedSeq[Int] = {
     val elements = Stream
@@ -366,7 +380,7 @@ object EveryNode {
       def unit(node: EveryNode[F]): CronUnit[F] = node.unit
 
       def matches(node: EveryNode[F]): Predicate[Int] =
-        anyOf(range(node).map(equalTo(_)).toList)
+        node.matches
 
       def implies[EE[_ <: CronField]](
           node: EveryNode[F]

@@ -92,6 +92,9 @@ lazy val commonJsSettings = Seq(
   jsEnv := new org.scalajs.jsenv.jsdomnodejs.JSDOMNodeJSEnv()
 )
 
+lazy val benchmarkSettings = inConfig(Benchmark)(ScalafmtPlugin.scalafmtConfigSettings) ++
+  automateHeaderSettings(Benchmark)
+
 lazy val consoleSettings = Seq(
   consoleImports ++= Seq("java.time._", "cron4s.lib.javatime._")
 )
@@ -184,6 +187,8 @@ lazy val docSettings = Seq(
   )
 )
 
+// -- Project Modules
+
 lazy val cron4s = (project in file("."))
   .settings(commonSettings)
   .settings(noPublishSettings)
@@ -221,7 +226,10 @@ lazy val docs = project
   .settings(docSettings)
   .dependsOn(cron4sJVM)
 
-lazy val core = (crossProject(JSPlatform, JVMPlatform) in file("modules/core"))
+lazy val core =
+  (crossProject(JSPlatform, JVMPlatform)
+    .withoutSuffixFor(JVMPlatform) in file("modules/core")
+  )
   .enablePlugins(AutomateHeaderPlugin, ScalafmtPlugin, ScalaMeterPlugin)
   .settings(
     name := "core",
@@ -233,6 +241,7 @@ lazy val core = (crossProject(JSPlatform, JVMPlatform) in file("modules/core"))
   .jsSettings(commonJsSettings)
   .jsSettings(Dependencies.coreJS)
   .jvmSettings(commonJvmSettings)
+  .jvmSettings(benchmarkSettings)
   .jvmSettings(consoleSettings)
   .jvmSettings(Dependencies.coreJVM)
   .jvmSettings(mimaSettings("core", Set("0.4.5", "0.5.0")))
@@ -241,26 +250,31 @@ lazy val coreJS = core.js
 lazy val coreJVM = core.jvm
 
 lazy val testkit =
-  (crossProject(JSPlatform, JVMPlatform).crossType(CrossType.Pure) in file(
-    "modules/testkit"))
-    .enablePlugins(AutomateHeaderPlugin, ScalafmtPlugin)
-    .settings(
-      name := "testkit",
-      moduleName := "cron4s-testkit"
-    )
-    .settings(commonSettings)
-    .settings(publishSettings)
-    .settings(Dependencies.testkit)
-    .jsSettings(commonJsSettings)
-    .jvmSettings(commonJvmSettings)
-    .jvmSettings(consoleSettings)
-    .jvmSettings(mimaSettings("testkit", Set("0.4.5", "0.5.0")))
-    .dependsOn(core)
+  (crossProject(JSPlatform, JVMPlatform)
+    .withoutSuffixFor(JVMPlatform)
+    .crossType(CrossType.Pure) in file("modules/testkit")
+  )
+  .enablePlugins(AutomateHeaderPlugin, ScalafmtPlugin)
+  .settings(
+    name := "testkit",
+    moduleName := "cron4s-testkit"
+  )
+  .settings(commonSettings)
+  .settings(publishSettings)
+  .settings(Dependencies.testkit)
+  .jsSettings(commonJsSettings)
+  .jvmSettings(commonJvmSettings)
+  .jvmSettings(consoleSettings)
+  .jvmSettings(mimaSettings("testkit", Set("0.4.5", "0.5.0")))
+  .dependsOn(core)
 
 lazy val testkitJS = testkit.js
 lazy val testkitJVM = testkit.jvm
 
-lazy val tests = (crossProject(JSPlatform, JVMPlatform) in file("tests"))
+lazy val tests =
+  (crossProject(JSPlatform, JVMPlatform)
+    .withoutSuffixFor(JVMPlatform) in file("tests")
+  )
   .enablePlugins(AutomateHeaderPlugin, ScalafmtPlugin)
   .settings(
     name := "tests",
@@ -319,7 +333,11 @@ lazy val momentjs = (project in file("modules/momentjs"))
 
 // Extension modules
 
-lazy val circe = (crossProject(JSPlatform, JVMPlatform).crossType(CrossType.Pure) in file("modules/circe"))
+lazy val circe =
+  (crossProject(JSPlatform, JVMPlatform)
+    .withoutSuffixFor(JVMPlatform)
+    .crossType(CrossType.Pure) in file("modules/circe")
+  )
   .enablePlugins(AutomateHeaderPlugin, ScalafmtPlugin)
   .settings(
     name := "circe",
@@ -334,7 +352,11 @@ lazy val circe = (crossProject(JSPlatform, JVMPlatform).crossType(CrossType.Pure
 lazy val circeJVM = circe.jvm
 lazy val circeJS  = circe.js
 
-lazy val decline = (crossProject(JSPlatform, JVMPlatform).crossType(CrossType.Pure) in file("modules/decline"))
+lazy val decline =
+  (crossProject(JSPlatform, JVMPlatform)
+    .withoutSuffixFor(JVMPlatform)
+    .crossType(CrossType.Pure) in file("modules/decline")
+  )
   .enablePlugins(AutomateHeaderPlugin, ScalafmtPlugin)
   .settings(
     name := "decline",

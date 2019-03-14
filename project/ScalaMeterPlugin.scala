@@ -13,7 +13,7 @@ object ScalaMeterPlugin extends AutoPlugin {
   override def projectConfigurations = Seq(Benchmark)
 
   override def projectSettings = Defaults.coreDefaultSettings ++ benchmarkSettings ++ Seq(
-    scalaMeterVersion := "0.17",
+    scalaMeterVersion := "0.16",
     libraryDependencies ++= Seq(
       "com.storm-enroute" %% "scalameter" % scalaMeterVersion.value % Benchmark
     ),

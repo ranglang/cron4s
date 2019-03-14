@@ -32,7 +32,7 @@ import cron4s.syntax.predicate._
   *
   * @author Antonio Alonso Dominguez
   */
-sealed trait Node[F <: CronField] {
+sealed trait Node[F <: CronField] extends Serializable {
 
   /**
     * Unit of this expression

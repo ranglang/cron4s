@@ -26,7 +26,8 @@ import shapeless._
 /**
   * Created by alonsodomin on 23/01/2017.
   */
-final class FieldNode[F <: CronField](private[cron4s] val raw: RawFieldNode[F]) extends AnyVal {
+final class FieldNode[F <: CronField](private[cron4s] val raw: RawFieldNode[F])
+    extends AnyVal with Serializable {
 
   override def toString: String = raw.fold(ops.show)
 
@@ -66,7 +67,7 @@ object FieldNode {
 }
 
 final class FieldNodeWithAny[F <: CronField](private[cron4s] val raw: RawFieldNodeWithAny[F])
-    extends AnyVal {
+    extends AnyVal with Serializable {
 
   override def toString: String = raw.fold(ops.show)
 
@@ -102,7 +103,7 @@ object FieldNodeWithAny {
 }
 
 final class EnumerableNode[F <: CronField](private[cron4s] val raw: RawEnumerableNode[F])
-    extends AnyVal {
+    extends AnyVal with Serializable {
 
   override def toString: String = raw.fold(ops.show)
 
@@ -140,7 +141,7 @@ object EnumerableNode {
 }
 
 final class DivisibleNode[F <: CronField](private[cron4s] val raw: RawDivisibleNode[F])
-    extends AnyVal {
+    extends AnyVal with Serializable {
 
   override def toString: String = raw.fold(ops.show)
 

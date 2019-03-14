@@ -115,7 +115,7 @@ private[cron4s] trait CronUnits {
 private[cron4s] trait CronUnitInstances extends CronUnits {
 
   private[this] def enumerated[F <: CronField](unit: CronUnit[F]): Enumerated[CronUnit[F]] =
-    new Enumerated[CronUnit[F]] {
+    new Enumerated[CronUnit[F]] with Serializable {
       override def range(fL: CronUnit[F]): IndexedSeq[Int] = unit.range
     }
 

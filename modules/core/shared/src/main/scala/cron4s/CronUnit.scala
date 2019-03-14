@@ -43,6 +43,16 @@ sealed trait CronUnit[+F <: CronField] extends Serializable {
     */
   def range: IndexedSeq[Int]
 
+  /**
+    * Minimum value for this unit
+    */
+  def min: Int
+
+  /**
+    * Maximum value for this unit
+    */
+  def max: Int
+
 }
 
 object CronUnit extends CronUnitInstances {

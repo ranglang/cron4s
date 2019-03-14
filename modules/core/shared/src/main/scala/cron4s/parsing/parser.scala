@@ -43,7 +43,7 @@ object CronParser extends Parsers with BaseParser {
     accept("decimal", { case Number(d) if d >= 0 => d })
 
   private val literal: Parser[String] =
-    accept("literal", { case Text(l) => l })
+    accept("literal", { case Text(l) => l.toLowerCase })
 
   private val blank: Parser[Char] =
     accept("blank", { case Blank => ' ' })

@@ -1,6 +1,5 @@
 package cron4s
 
-import cron4s._
 import cron4s.expr._
 
 import org.scalameter.api._
@@ -20,6 +19,18 @@ object NodeMatcher extends Bench.LocalTime {
       value <- CronUnit.Minutes.range
     } yield const2Enumerable(ConstNode[CronField.Minute](value))
     SeveralNode.fromSeq(minutes).get
+  }
+
+  def severalByChunkSize[F <: CronField](chunkSize: Int)(f: (Int, Int) => EnumerableNode[F])(implicit unit: CronUnit[F]): SeveralNode[F] = {
+    val minuteRanges = (unit.min to unit.max by chunkSize)
+      .map { lower => f(lower, chunkSize) }
+
+    SeveralNode.fromSeq[F](minuteRanges).get
+  }
+
+  def severalNodeGen[F <: CronField](implicit unit: CronUnit[F]) = {
+    val stepSize = unit.max / 10
+    Gen.range("severalGap")(unit.min, unit.max, stepSize)
   }
 
   val nodes = Gen.enumeration("node")(

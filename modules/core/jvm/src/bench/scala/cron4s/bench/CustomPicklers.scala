@@ -26,8 +26,14 @@ object CustomPicklers {
     new Pickler[List[A]] {
 
       def pickle(x: List[A]): Array[Byte] = {
-        val header = IntPickler.pickle(x.length)
-        x.foldLeft(header)((acc, y) => acc ++ pickler.pickle(y))
+        val buffer = ListBuffer.empty[Byte]
+        buffer ++= IntPickler.pickle(x.length)
+
+        val iterator = x.iterator
+        while (iterator.hasNext) {
+          buffer ++= pickler.pickle(iterator.next())
+        }
+        buffer.toArray
       }
 
       def unpickle(x: Array[Byte], from: Int): (List[A], Int) = {

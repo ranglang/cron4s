@@ -6,7 +6,7 @@ import cron4s.expr._
 import org.scalameter.api._
 import org.scalameter.picklers.Implicits._
 
-object Parser extends Bench.OnlineRegressionReport {
+object ParserBenchmark extends Bench.OfflineRegressionReport {
   val expressions = Gen.enumeration("cron")(
     "10-35 2,4,6 * ? * *",
     "10-65 * * * * *",

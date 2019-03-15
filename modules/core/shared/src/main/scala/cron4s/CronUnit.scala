@@ -60,6 +60,7 @@ object CronUnit extends CronUnitInstances {
   @inline def apply[F <: CronField](implicit unit: CronUnit[F]): CronUnit[F] =
     unit
 
+  @transient
   final val All: List[CronUnit[_ <: CronField]] =
     List(Seconds, Minutes, Hours, DaysOfMonth, Months, DaysOfWeek)
 

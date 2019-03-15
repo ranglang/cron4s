@@ -7,7 +7,8 @@ import cron4s.expr._
 import org.scalameter.api._
 import org.scalameter.picklers.noPickler._
 
-object NodeMatcher extends Bench.LocalTime {
+object NodeBenchmark extends Bench.OfflineRegressionReport {
+  override def persistor = new SerializationPersistor
 
   final val ValueToMatch = 30
 
@@ -49,12 +50,7 @@ object NodeMatcher extends Bench.LocalTime {
 
   performance of "Node" in {
     measure method "match" in {
-      using(nodes) config (
-        exec.minWarmupRuns      -> 10,
-        exec.maxWarmupRuns      -> 20,
-        exec.benchRuns          -> 30,
-        exec.independentSamples -> 5
-      ) in { n =>
+      using(nodes) in { n =>
         n.matches(ValueToMatch)
       }
     }

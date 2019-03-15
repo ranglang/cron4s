@@ -93,7 +93,7 @@ lazy val commonJsSettings = Seq(
 )
 
 lazy val benchmarkSettings = inConfig(Benchmark)(ScalafmtPlugin.scalafmtConfigSettings) ++
-  automateHeaderSettings(Benchmark)
+  headerSettings(Benchmark) ++ automateHeaderSettings(Benchmark)
 
 lazy val consoleSettings = Seq(
   consoleImports ++= Seq("java.time._", "cron4s.lib.javatime._")
@@ -237,11 +237,11 @@ lazy val core =
   )
   .settings(commonSettings)
   .settings(publishSettings)
+  .settings(benchmarkSettings)
   .settings(Dependencies.core)
   .jsSettings(commonJsSettings)
   .jsSettings(Dependencies.coreJS)
   .jvmSettings(commonJvmSettings)
-  .jvmSettings(benchmarkSettings)
   .jvmSettings(consoleSettings)
   .jvmSettings(Dependencies.coreJVM)
   .jvmSettings(mimaSettings("core", Set("0.4.5", "0.5.0")))

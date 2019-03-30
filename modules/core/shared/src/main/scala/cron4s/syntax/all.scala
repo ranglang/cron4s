@@ -20,7 +20,7 @@ package cron4s.syntax
   * Created by alonsodomin on 25/08/2016.
   */
 private[cron4s] trait AllSyntax
-    extends DateTimeCronSyntax with DateTimeNodeSyntax with FieldExprSyntax with PredicateSyntax
-    with CronStringSyntax
+    extends DateTimeCronSyntax with DateTimeNodeSyntax with SteppableSyntax with EnumeratedSyntax
+    with FieldExprSyntax with PredicateSyntax with CronStringSyntax
 
 object all extends AllSyntax

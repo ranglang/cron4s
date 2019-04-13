@@ -34,7 +34,10 @@ object Dependencies {
   val kindProjector = compilerPlugin(
     "org.typelevel" % "kind-projector" % "0.10.0" cross CrossVersion.binary
   )
-  lazy val compilerPlugins = Seq(macroParadise, kindProjector)
+  val betterMonadicFor = compilerPlugin(
+    "com.olegpy" %% "better-monadic-for" % "0.3.0-M4"
+  )
+  lazy val compilerPlugins = Seq(macroParadise, kindProjector, betterMonadicFor)
 
   lazy val core = Def.settings {
     libraryDependencies ++= compilerPlugins ++ Seq(
